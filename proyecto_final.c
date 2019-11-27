@@ -5,10 +5,8 @@
 
 int main(int argc, char **argv){
   int i,j,np,pid,iteraciones,k,n=3,vecinoDerecho,vecinoIzquierdo,VVivos;
-  int filas=7;
-  double Ti,Tf;
-
-  int columnas=5;
+  int filas=15;
+  int columnas=15;
 
 
 
@@ -23,6 +21,7 @@ int matrizB[filas][columnas];
   int fila_actual[columnas-1],fila_actualizada[columnas-1],fila_abajo[columnas-1],fila_arriba[columnas-1],abajo=pid+1,arriba=pid-1;
 //iniciando tablero
 if(pid==0){
+  double start = MPI_Wtime();
   printf("numero de procesos totales:%d\n",np );
  printf("PROCESO MASTER.. HACIENDO MATRIZ\n");
 
@@ -39,7 +38,7 @@ if(pid==0){
             printf("tablero orginal\n");
             for(i=0;i<filas;i++){
                   for(j=0;j<columnas;j++){
-                     printf("%i",matrizA[i][j]);
+                     printf("|%d|",matrizA[i][j]);
                   }
                printf("\n");
 
@@ -58,12 +57,12 @@ if(pid==0){
       MPI_Sendrecv(&fila_actual, columnas , MPI_INT,np-1, 0 ,&fila_arriba, columnas , MPI_INT,arriba, 0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         int k;
-        for(k=0;k<columnas;k++){
+    /*    for(k=0;k<columnas;k++){
           printf("ROOT recibi...%d\n",fila_abajo[k]);
      }
      for(k=0;k<columnas;k++){
        printf("ROOT recibi...%d\n",fila_arriba[k]);
-  }
+  }*/
 
   //Vecindad usada=Moore
 
@@ -173,16 +172,22 @@ for(k=0;k<columnas;k++){
 }
 
 MPI_Gather(&fila_actualizada,columnas,MPI_INT,&matrizB,columnas,MPI_INT,0,MPI_COMM_WORLD);
+
+double end  = MPI_Wtime();
+
+double tiempo_fila=end-start;
+printf("TIEMPO TOTAL proceso pid %d----->%f[s]\n",pid,tiempo_fila);
 printf("Tablero actualizado\n");
 for(i=0;i<filas;i++){
       for(j=0;j<columnas;j++){
-         printf("%d",matrizB[i][j]);
+         printf("|%d|",matrizB[i][j]);
       }
    printf("\n");
 
  }
 
 }else{
+  double start  = MPI_Wtime();
       MPI_Scatter(&matrizA,columnas,MPI_INT,&fila_actual,columnas,MPI_INT,0,MPI_COMM_WORLD);//podria el buffer ir sin &
       int a;
       int fila_abajo[columnas],fila_arriba[columnas];
@@ -311,6 +316,10 @@ for(int k=0;k<columnas;k++){
 }
 MPI_Gather(&fila_actualizada,columnas,MPI_INT,&matrizB,columnas,MPI_INT,0,MPI_COMM_WORLD);
 
+double end  = MPI_Wtime();
+
+double tiempo_fila=end-start;
+printf("TIEMPO TOTAL proceso pid %d----->%f[s]\n",pid,tiempo_fila);
       }
 
       if(pid==np-1){
@@ -318,7 +327,7 @@ MPI_Gather(&fila_actualizada,columnas,MPI_INT,&matrizB,columnas,MPI_INT,0,MPI_CO
         MPI_Sendrecv(&fila_actual, columnas , MPI_INT,0, 0 ,&fila_arriba, columnas , MPI_INT,0, 0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Sendrecv(&fila_actual, columnas, MPI_INT,arriba, 0 ,&fila_abajo, columnas , MPI_INT,arriba, 0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-     for(a=0;a<columnas;a++){
+  /*   for(a=0;a<columnas;a++){
 
         printf("SOY EL PROCESO :%d y recibi la fila de abajo:%d\n",pid,fila_arriba[a]);
 
@@ -327,7 +336,7 @@ MPI_Gather(&fila_actualizada,columnas,MPI_INT,&matrizB,columnas,MPI_INT,0,MPI_CO
 
     printf("SOY EL PROCESO :%d y recibi la fila de arriba:%d\n",pid,fila_abajo[a]);
 
-}
+}*/
 
 
 for(int i=0;i<columnas;i++){
@@ -421,6 +430,9 @@ for(int k=0;k<columnas;k++){
   //printf("pid:%d matriz actualizada...%d\n",pid,fila_actualizada[k]);
 }
 MPI_Gather(&fila_actualizada,columnas,MPI_INT,&matrizB,columnas,MPI_INT,0,MPI_COMM_WORLD);
+double end=MPI_Wtime();
+double tiempo_fila=end-start;
+printf("TIEMPO TOTAL proceso pid %d----->%f[s]\n",pid,tiempo_fila);
 }
 //printf("Tiempo de ejecucion: %f",Ti-Tf);
 
