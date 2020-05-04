@@ -51,6 +51,7 @@ if(pid==0){
 
         }
 */
+  
 
       //COMUNICACIÓN DE PROCESOS
       MPI_Sendrecv(&fila_actual, columnas , MPI_INT,abajo, 0 ,&fila_abajo, columnas , MPI_INT,abajo, 0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
