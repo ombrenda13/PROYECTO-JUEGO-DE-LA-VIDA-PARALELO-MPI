@@ -448,3 +448,11 @@ MPI_Finalize();
 return 0;
 
 }
+
+
+
+
+
+
+//BRENDA ORTIZ MARTÍNEZ 
+//PROYECTO FINAL DISTRIBUIDOS
